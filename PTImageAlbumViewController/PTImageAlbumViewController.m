@@ -41,6 +41,19 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)aDecoder {
+	self = [super initWithCoder: aDecoder];
+	if (!self)
+		return nil;
+
+	self.initialIndex = 0;
+	self.imageAlbumView = [[PTImageAlbumView alloc] init];
+	self.imageAlbumView.imageAlbumDelegate = self;
+	self.imageAlbumView.imageAlbumDataSource = self;
+
+	return self;
+}
+
 - (id)initWithImageAtIndex:(NSInteger)index
 {
     self = [self init];

@@ -16,6 +16,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <Nimbus/NimbusPhotos.h>
 
 /**
  * A network-based photo album view controller.

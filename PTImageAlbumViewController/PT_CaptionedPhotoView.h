@@ -15,6 +15,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Nimbus/NimbusPhotos.h>
 
 /**
  * A subclass of NIPhotoScrollView that shows a caption beneath the picture.

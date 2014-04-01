@@ -16,6 +16,7 @@
 
 #import "PTImageAlbumViewDelegate.h"
 #import "PTImageAlbumViewDataSource.h"
+#import <Nimbus/NimbusPhotos.h>
 
 @interface PTImageAlbumView : NIPhotoAlbumScrollView
 

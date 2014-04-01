@@ -15,6 +15,7 @@
 //
 
 #import "PT_NetworkPhotoAlbumViewController.h"
+#import <AFNetworking/AFNetworking.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,9 +29,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)shutdown_NetworkPhotoAlbumViewController {
-  for (NINetworkRequestOperation* request in _queue.operations) {
-    request.delegate = nil;
-  }
   [_queue cancelAllOperations];
 }
 
@@ -79,48 +77,41 @@
   NSURL* url = [NSURL URLWithString:source];
 
   // We must use __unsafe_unretained here to avoid creating a retain cycle with the readOp.
-  NINetworkRequestOperation* readOp = [[NINetworkRequestOperation alloc] initWithURL:url];
-  __unsafe_unretained NINetworkRequestOperation* weakOp = readOp;
-  readOp.timeout = 30;
-
-  // Set an negative index for thumbnail requests so that they don't get cancelled by
-  // photoAlbumScrollView:stopLoadingPhotoAtIndex:
-  readOp.tag = identifier;
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: url];
+  AFHTTPRequestOperation* readOp = [[AFHTTPRequestOperation alloc] initWithRequest: request];
+  __unsafe_unretained AFHTTPRequestOperation* weakOp = readOp;
+  request.timeoutInterval = 30;
 
   NSString* photoIndexKey = [self cacheKeyForPhotoIndex:photoIndex];
 
   // The completion block will be executed on the main thread, so we must be careful not
   // to do anything computationally expensive here.
-  [readOp setDidFinishBlock:^(NIOperation* operation) {
-    UIImage* image = [UIImage imageWithData:weakOp.data];
+  [readOp setCompletionBlockWithSuccess: ^(AFHTTPRequestOperation *operation, id responseObject) {
+	  UIImage* image = [UIImage imageWithData: responseObject];
 
-    // Store the image in the correct image cache.
-    if (isThumbnail) {
-      [_thumbnailImageCache storeObject: image
-                               withName: photoIndexKey];
+	  // Store the image in the correct image cache.
+	  if (isThumbnail) {
+		  [_thumbnailImageCache storeObject: image
+								   withName: photoIndexKey];
 
-    } else {
-      [_highQualityImageCache storeObject: image
-                                 withName: photoIndexKey];
-    }
+	  } else {
+		  [_highQualityImageCache storeObject: image
+									 withName: photoIndexKey];
+	  }
 
-    // If you decide to move this code around then ensure that this method is called from
-    // the main thread. Calling it from any other thread will have undefined results.
-    [self.photoAlbumView didLoadPhoto: image
-                              atIndex: photoIndex
-                            photoSize: photoSize];
+	  // If you decide to move this code around then ensure that this method is called from
+	  // the main thread. Calling it from any other thread will have undefined results.
+	  [self.photoAlbumView didLoadPhoto: image
+								atIndex: photoIndex
+							  photoSize: photoSize];
 
-    if (isThumbnail) {
-      [self.photoScrubberView didLoadThumbnail:image atIndex:photoIndex];
-    }
+	  if (isThumbnail) {
+		  [self.photoScrubberView didLoadThumbnail:image atIndex:photoIndex];
+	  }
 
-    [_activeRequests removeObject:identifierKey];
-  }];
-
-  // When this request is canceled (like when we're quickly flipping through an album)
-  // the request will fail, so we must be careful to remove the request from the active set.
-  [readOp setDidFailWithErrorBlock:^(NIOperation* operation, NSError* error) {
-    [_activeRequests removeObject:identifierKey];
+	  [_activeRequests removeObject:identifierKey];
+  } failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
+	  [_activeRequests removeObject:identifierKey];
   }];
 
 
