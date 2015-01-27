@@ -12,5 +12,5 @@ Pod::Spec.new do |s|
 
   s.source_files = 'PTImageAlbumViewController'
   s.framework  = 'ImageIO'
-  s.dependency 'Nimbus/Photos', :podspec => 'https://gist.github.com/exalted/7655606/raw/ce27220c457984ecd30fb800503b4c299159ace0/Nimbus.podspec'
+  s.dependency 'Nimbus'
 end
