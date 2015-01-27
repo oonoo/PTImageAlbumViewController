@@ -5,12 +5,12 @@ Pod::Spec.new do |s|
   s.homepage     = "http://www.pittle.org/"
 
   s.license      = 'Apache License, Version 2.0'
-  s.author       = { "Ali Servet Donmez" => "asd@pittle.org" }
+  s.author       = { "Arno Nym" => "arno@test.com" }
 
   s.source       = { :git => "https://github.com/djbe/PTImageAlbumViewController.git", :tag => s.version.to_s }
-  s.platform     = :ios, 6.0
+  s.platform     = :ios
 
   s.source_files = 'PTImageAlbumViewController'
   s.framework  = 'ImageIO'
-  s.dependency 'Nimbus'
+  s.dependency 'Nimbus/Photos', :podspec => 'https://gist.github.com/exalted/7655606/raw/ce27220c457984ecd30fb800503b4c299159ace0/Nimbus.podspec'
 end
