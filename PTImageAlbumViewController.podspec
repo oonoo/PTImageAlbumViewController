@@ -12,5 +12,5 @@ Pod::Spec.new do |s|
 
   s.source_files = 'PTImageAlbumViewController'
   s.framework  = 'ImageIO'
-  s.dependency 'Nimbus'
+  s.dependency 'Nimbus/Photos'
 end
